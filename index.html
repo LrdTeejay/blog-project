@@ -11,12 +11,20 @@
   <nav class="bg-blue-800 text-white p-4">
     <div class="container mx-auto py-3 flex justify-between items-center">
       <h1 class="md:text-xl text-center tracking-tighter font-bold">
-        <span class="text-red-500">T</span><span class="text-orange-500">H</span><span class="text-yellow-500">E</span><br>
-        <span class="text-green-500">G</span><span class="text-white">I</span><span class="text-red-500">S</span><span class="text-blue-400"></span><span class="text-green-400">T</span>
+        <span class="text-red-500">T</span>
+        <span class="text-orange-500">H</span>
+        <span class="text-yellow-500">E</span><br>
+        <span class="text-green-500">G</span>
+        <span class="text-white">I</span>
+        <span class="text-red-500">S</span>
+        <span class="text-blue-400"></span>
+        <span class="text-green-400">T</span>
       </h1>
+
       <div class="flex">
         <input type="text" id="searchInput" placeholder="Search blogs..."
-          class="w-1/2 md:w-full ml-9 px-2 py-1 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500 text-gray-800" />
+          class="w-1/2 md:w-full ml-9 px-2 py-1 rounded-md border border-gray-300 focus:outline-none
+                 focus:border-blue-500 text-gray-800" />
         <button id="searchButton"
           class="px-3 py-1 ml-2 bg-green-600 text-white rounded-md hover:bg-blue-600 focus:outline-none">
           Search
@@ -29,54 +37,63 @@
     </div>
   </nav>
 
-  <div class="container mx-4 mt-4">
+  <!-- Blog Cards -->
+  <div class="container mx-4 mt-4 ">
     <div id="blogCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </div>
 
+  <!-- Create Blog Form -->
   <div id="createBlog" class="container mx-auto bg-white p-6 rounded-lg shadow-md mt-6">
     <h2 class="text-2xl font-semibold mb-4">Create New Blog Article</h2>
     <form id="blogForm" class="space-y-4">
-      <input type="text" id="newTitle" placeholder="Title" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-      <input type="text" id="newAuthor" placeholder="Author Name" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-      <textarea id="newDesc" placeholder="Write description..." rows="4" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+      <input type="text" id="newTitle" placeholder="Title"
+        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      <input type="text" id="newAuthor" placeholder="Author Name"
+        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      <textarea id="newDesc" placeholder="Write description..." rows="4"
+        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
       <div>
         <label for="newImage" class="block text-sm font-medium text-gray-700 mb-1">Upload Image</label>
-        <input type="file" id="newImage" accept="image/*" class="block w-full text-sm text-gray-700 border border-gray-300 rounded cursor-pointer bg-gray-50 focus:outline-none focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:border-gray-300 file:text-sm file:font-medium file:bg-white hover:file:bg-gray-100" />
+        <input type="file" id="newImage" accept="image/*"
+          class="block w-full text-sm text-gray-700 border border-gray-300 rounded cursor-pointer bg-gray-50
+                 focus:outline-none focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-md
+                 file:border file:border-gray-300 file:text-sm file:font-medium file:bg-white hover:file:bg-gray-100" />
       </div>
-      <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-blue-600 focus:outline-none">
+      <button type="submit"
+        class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-blue-600 focus:outline-none">
         Add Blog
       </button>
     </form>
   </div>
 
+  <!-- Modal -->
   <div id="myModal" class="hidden fixed z-50 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
     <div id="modalContent" class="bg-white rounded-md p-8 max-w-lg w-full relative">
       <span class="close absolute top-2 right-2 text-gray-600 text-2xl cursor-pointer">×</span>
       <img id="modalImage" src="#" alt="Blog Image" class="w-full h-auto object-cover rounded mb-2">
       <h2 id="modalTitle" class="text-lg font-semibold mb-2"></h2>
-      <div id="authorDetails" class="text-sm text-gray-500 flex items-center mb-4"></div>
-      <p id="modalContentText"></p>
+      <div id="authorDetails" class="text-sm text-gray-500 flex items-center"></div>
     </div>
   </div>
 
   <button id="top" class="ml-2 bg-red-500 text-white px-1 py-1 rounded hover:bg-red-600 mt-2">Back to top</button>
 
   <script>
-    // Load existing blogs from localStorage or start with empty array
-    const blogs = JSON.parse(localStorage.getItem('blogs')) || [];
-
-    function saveBlogs() {
-      localStorage.setItem('blogs', JSON.stringify(blogs));
-    }
+    const initialBlogs = [];  // ✅ Added fallback for undefined reference
+    const stored = localStorage.getItem('blogs');
+    const blogs = stored ? JSON.parse(stored) : initialBlogs;
 
     const blogCardsContainer = document.getElementById("blogCards");
     const modal = document.getElementById("myModal");
     const modalImage = document.getElementById("modalImage");
     const modalTitle = document.getElementById("modalTitle");
+    const modalContent = document.getElementById("modalContent");  // ✅ Now matches the HTML
     const authorDetails = document.getElementById("authorDetails");
-    const modalText = document.getElementById("modalContentText");
     const closeModalBtn = document.querySelector(".close");
-    const searchInput = document.getElementById('searchInput');
+
+    function saveBlogs() {
+      localStorage.setItem('blogs', JSON.stringify(blogs));
+    }
 
     function displayBlogs(query = "") {
       blogCardsContainer.innerHTML = "";
@@ -91,10 +108,10 @@
             <div class="text-sm text-gray-600 mt-2">${blog.date} by ${blog.authorName}</div>
           `;
 
-          const readBtn = document.createElement('button');
+          const readBtn = document.createElement('a');
+          readBtn.href = `details.html?id=${blog.id}`;
           readBtn.textContent = "Read More";
           readBtn.className = "bg-green-600 text-white px-2 py-1 rounded hover:bg-blue-600 mt-2 inline-block";
-          readBtn.onclick = e => { e.stopPropagation(); openModal(blog); };
           card.appendChild(readBtn);
 
           const delBtn = document.createElement('button');
@@ -102,12 +119,9 @@
           delBtn.className = "ml-2 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 mt-2 inline-block";
           delBtn.onclick = e => {
             e.stopPropagation();
-            const idx = blogs.findIndex(b => b.id === blog.id);
-            if (idx > -1) {
-              blogs.splice(idx, 1);
-              saveBlogs();
-              displayBlogs(searchInput.value);
-            }
+            blogs.splice(blogs.findIndex(b => b.id === blog.id), 1);
+            saveBlogs();
+            displayBlogs(document.getElementById('searchInput').value);
           };
           card.appendChild(delBtn);
 
@@ -119,16 +133,20 @@
     function openModal(blog) {
       modalImage.src = blog.imageUrl;
       modalTitle.textContent = blog.title;
+      modalContent.querySelector('img');
+      modalContent.querySelector('#modalTitle');
+      modalContent.querySelector('#authorDetails');
+      const contentEl = document.createElement('p');
+      contentEl.textContent = blog.content;
+      modalContent.appendChild(contentEl);
       authorDetails.innerHTML = `<img src="${blog.authorImage}" alt="Author" class="w-6 h-6 rounded-full mr-2">${blog.authorName}`;
-      modalText.textContent = blog.content;
       modal.classList.remove("hidden");
     }
 
-    closeModalBtn.onclick = () => modal.classList.add('hidden');
-    window.onclick = e => { if (e.target === modal) modal.classList.add('hidden'); };
+    closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
 
-    document.getElementById("searchButton").onclick = () => displayBlogs(searchInput.value);
-    searchInput.oninput = e => displayBlogs(e.target.value);
+    document.getElementById("searchButton").onclick = () => displayBlogs(document.getElementById("searchInput").value);
+    document.getElementById("searchInput").oninput = e => displayBlogs(e.target.value);
 
     document.getElementById('blogForm').addEventListener('submit', e => {
       e.preventDefault();
@@ -142,6 +160,7 @@
       reader.onload = ev => {
         blogs.unshift({
           id: Date.now(),
+          category: 'User',
           title,
           description,
           content: description,
@@ -151,16 +170,18 @@
           imageUrl: ev.target.result
         });
         saveBlogs();
-        displayBlogs(searchInput.value);
+        displayBlogs(document.getElementById("searchInput").value);
         e.target.reset();
       };
       reader.readAsDataURL(file);
     });
 
-    document.getElementById('createButton').onclick = () =>
-      document.getElementById('createBlog').scrollIntoView({ behavior: 'smooth' });
-    document.getElementById('top').onclick = () =>
-      document.getElementById('createButton').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('createButton').addEventListener('click', () =>
+      document.getElementById('createBlog').scrollIntoView({ behavior: 'smooth' })
+    );
+    document.getElementById('top').addEventListener('click', () =>
+      document.getElementById('createButton').scrollIntoView({ behavior: 'smooth' })
+    );
 
     displayBlogs();
   </script>
