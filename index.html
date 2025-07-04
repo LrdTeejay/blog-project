@@ -17,14 +17,12 @@
         <span class="text-green-500">G</span>
         <span class="text-white">I</span>
         <span class="text-red-500">S</span>
-        <span class="text-blue-400"></span>
         <span class="text-green-400">T</span>
       </h1>
 
       <div class="flex">
         <input type="text" id="searchInput" placeholder="Search blogs..."
-          class="w-1/2 md:w-full ml-9 px-2 py-1 rounded-md border border-gray-300 focus:outline-none
-                 focus:border-blue-500 text-gray-800" />
+          class="w-1/2 md:w-full ml-9 px-2 py-1 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500 text-gray-800" />
         <button id="searchButton"
           class="px-3 py-1 ml-2 bg-green-600 text-white rounded-md hover:bg-blue-600 focus:outline-none">
           Search
@@ -38,7 +36,7 @@
   </nav>
 
   <!-- Blog Cards -->
-  <div class="container mx-4 mt-4 ">
+  <div class="container mx-4 mt-4">
     <div id="blogCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </div>
 
@@ -55,9 +53,8 @@
       <div>
         <label for="newImage" class="block text-sm font-medium text-gray-700 mb-1">Upload Image</label>
         <input type="file" id="newImage" accept="image/*"
-          class="block w-full text-sm text-gray-700 border border-gray-300 rounded cursor-pointer bg-gray-50
-                 focus:outline-none focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-md
-                 file:border file:border-gray-300 file:text-sm file:font-medium file:bg-white hover:file:bg-gray-100" />
+          class="block w-full text-sm text-gray-700 border border-gray-300 rounded cursor-pointer bg-gray-50 focus:outline-none focus:border-blue-500
+                 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:border-gray-300 file:text-sm file:font-medium file:bg-white hover:file:bg-gray-100" />
       </div>
       <button type="submit"
         class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-blue-600 focus:outline-none">
@@ -66,30 +63,14 @@
     </form>
   </div>
 
-  <!-- Modal -->
-  <div id="myModal" class="hidden fixed z-50 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-    <div id="modalContent" class="bg-white rounded-md p-8 max-w-lg w-full relative">
-      <span class="close absolute top-2 right-2 text-gray-600 text-2xl cursor-pointer">×</span>
-      <img id="modalImage" src="#" alt="Blog Image" class="w-full h-auto object-cover rounded mb-2">
-      <h2 id="modalTitle" class="text-lg font-semibold mb-2"></h2>
-      <div id="authorDetails" class="text-sm text-gray-500 flex items-center"></div>
-    </div>
-  </div>
-
   <button id="top" class="ml-2 bg-red-500 text-white px-1 py-1 rounded hover:bg-red-600 mt-2">Back to top</button>
 
   <script>
-    const initialBlogs = [];  // ✅ Added fallback for undefined reference
+    const initialBlogs = [];
     const stored = localStorage.getItem('blogs');
     const blogs = stored ? JSON.parse(stored) : initialBlogs;
 
     const blogCardsContainer = document.getElementById("blogCards");
-    const modal = document.getElementById("myModal");
-    const modalImage = document.getElementById("modalImage");
-    const modalTitle = document.getElementById("modalTitle");
-    const modalContent = document.getElementById("modalContent");  // ✅ Now matches the HTML
-    const authorDetails = document.getElementById("authorDetails");
-    const closeModalBtn = document.querySelector(".close");
 
     function saveBlogs() {
       localStorage.setItem('blogs', JSON.stringify(blogs));
@@ -102,6 +83,7 @@
         .forEach(blog => {
           const card = document.createElement('div');
           card.className = "bg-white p-4 rounded-md shadow-md transform hover:scale-105 transition duration-300 relative";
+
           card.innerHTML = `
             <img src="${blog.imageUrl}" alt="Blog Image" class="w-full h-64 object-cover mb-2">
             <h2 class="text-lg font-bold mb-1">${blog.title}</h2>
@@ -112,6 +94,7 @@
           readBtn.href = `details.html?id=${blog.id}`;
           readBtn.textContent = "Read More";
           readBtn.className = "bg-green-600 text-white px-2 py-1 rounded hover:bg-blue-600 mt-2 inline-block";
+          readBtn.onclick = e => e.stopPropagation();
           card.appendChild(readBtn);
 
           const delBtn = document.createElement('button');
@@ -119,31 +102,16 @@
           delBtn.className = "ml-2 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 mt-2 inline-block";
           delBtn.onclick = e => {
             e.stopPropagation();
-            blogs.splice(blogs.findIndex(b => b.id === blog.id), 1);
+            const idx = blogs.findIndex(b => b.id === blog.id);
+            blogs.splice(idx, 1);
             saveBlogs();
             displayBlogs(document.getElementById('searchInput').value);
           };
           card.appendChild(delBtn);
 
-          card.onclick = () => openModal(blog);
           blogCardsContainer.appendChild(card);
         });
     }
-
-    function openModal(blog) {
-      modalImage.src = blog.imageUrl;
-      modalTitle.textContent = blog.title;
-      modalContent.querySelector('img');
-      modalContent.querySelector('#modalTitle');
-      modalContent.querySelector('#authorDetails');
-      const contentEl = document.createElement('p');
-      contentEl.textContent = blog.content;
-      modalContent.appendChild(contentEl);
-      authorDetails.innerHTML = `<img src="${blog.authorImage}" alt="Author" class="w-6 h-6 rounded-full mr-2">${blog.authorName}`;
-      modal.classList.remove("hidden");
-    }
-
-    closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
 
     document.getElementById("searchButton").onclick = () => displayBlogs(document.getElementById("searchInput").value);
     document.getElementById("searchInput").oninput = e => displayBlogs(e.target.value);
@@ -160,9 +128,7 @@
       reader.onload = ev => {
         blogs.unshift({
           id: Date.now(),
-          category: 'User',
           title,
-          description,
           content: description,
           date: new Date().toLocaleDateString(),
           authorName,
@@ -183,6 +149,7 @@
       document.getElementById('createButton').scrollIntoView({ behavior: 'smooth' })
     );
 
+    // Initial render
     displayBlogs();
   </script>
 </body>
