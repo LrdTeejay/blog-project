@@ -19,6 +19,10 @@
     if (!blog) {
       detailEl.innerHTML = '<p class="text-red-500">Blog not found.</p>';
     } else {
+      renderDetails();
+    }
+
+    function renderDetails() {
       detailEl.innerHTML = `
         <img src="${blog.imageUrl}" class="w-full h-64 object-cover rounded mb-4"/>
         <h1 class="text-3xl font-bold mb-2">${blog.title}</h1>
@@ -32,7 +36,9 @@
     }
 
     function attachReadModeHandlers() {
-      document.getElementById('backBtn').onclick = () => history.back();
+      document.getElementById('backBtn').onclick = () => {
+        window.location.href = 'index.html';
+      };
       document.getElementById('editBtn').onclick = renderEdit;
     }
 
@@ -56,22 +62,22 @@
     }
 
     function attachEditModeHandlers() {
-      document.getElementById('imageInput').onchange = function(e) {
+      const imageInput = document.getElementById('imageInput');
+      imageInput.onchange = e => {
         const file = e.target.files[0];
         if (file && file.type.startsWith('image/')) {
           const reader = new FileReader();
-          reader.onload = ev => {
-            document.getElementById('previewImg').src = ev.target.result;
-          };
+          reader.onload = ev => document.getElementById('previewImg').src = ev.target.result;
           reader.readAsDataURL(file);
         }
       };
 
       document.getElementById('cancelBtn').onclick = renderDetails;
+
       document.getElementById('saveBtn').onclick = () => {
         blog.title = document.getElementById('titleInput').value.trim();
         blog.content = document.getElementById('contentInput').value.trim();
-        const file = document.getElementById('imageInput').files[0];
+        const file = imageInput.files[0];
         if (file && file.type.startsWith('image/')) {
           const reader = new FileReader();
           reader.onload = ev => {
@@ -79,7 +85,9 @@
             finalizeSave();
           };
           reader.readAsDataURL(file);
-        } else finalizeSave();
+        } else {
+          finalizeSave();
+        }
       };
     }
 
@@ -90,8 +98,6 @@
       localStorage.setItem('blogs', JSON.stringify(all));
       renderDetails();
     }
-
-    renderDetails();
   </script>
 </body>
 </html>
